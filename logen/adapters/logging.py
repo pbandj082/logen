@@ -174,9 +174,9 @@ class LoggingFactory(Factory):
     def create_file_handler(
         self,
         file_name: str,
-        max_bytes: int,
-        backup_count: int,
-        encoding: str,
+        max_bytes: int = 2000_000,
+        backup_count: int = 5,
+        encoding: str = 'UTF-8',
     ) -> FileHandler:
         origin = logging.handlers.RotatingFileHandler(
             file_name,
