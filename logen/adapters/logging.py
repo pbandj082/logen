@@ -125,7 +125,11 @@ class _LoggingLogger(logging.Logger):
     def __init__(self, name, level=logging.NOTSET):
         super().__init__(name=name, level=level)
     
-    def findCaller(self, stack_info: bool, stacklevel: int) -> Tuple[str, int, str, Optional[str]]:
+    def findCaller(
+        self,
+        stack_info: bool = False,
+        stacklevel: int = 1
+    ) -> Tuple[str, int, str, Optional[str]]:
         f = sys._getframe(3)
         if f is not None:
             f = f.f_back
