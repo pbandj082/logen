@@ -8,7 +8,7 @@ from .handlers import ConsoleHandler
 from .handlers import FileHandler
 from .level import Level
 from .logger import Logger
-from .adapters.logging import LoggingFactory
+from .adapters.logging.factory import LoggingFactory
 
 __all__ = [
     'Factory',
