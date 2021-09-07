@@ -27,7 +27,8 @@ def to_logging_level(level: Level):
     return logging_levels_map[level]
 
 
-class LoggingFormatter(Formatter):
+@Formatter.register
+class LoggingFormatter:
     def __init__(self, origin: logging.Formatter):
         self._origin = origin
 
@@ -68,7 +69,8 @@ class _LoggingFormatter(logging.Formatter):
         return s
 
 
-class LoggingHandler(Handler, metaclass=ABCMeta):
+@Handler.register
+class LoggingHandler(metaclass=ABCMeta):
     def __init__(self, origin: logging.Handler):
         self._origin = origin
     
@@ -76,7 +78,7 @@ class LoggingHandler(Handler, metaclass=ABCMeta):
     def origin(self) -> logging.Handler:
         return self._origin
 
-    def set_formatter(self, formatter: Formatter) -> None:
+    def set_formatter(self, formatter: LoggingFormatter) -> None:
         self._origin.setFormatter(formatter.origin)
 
     def set_level(self, level: Level) -> None:
@@ -95,7 +97,8 @@ class LoggingFileHandler(LoggingHandler):
         super().__init__(origin=origin)
 
 
-class LoggingLogger(Logger):
+@Logger.register
+class LoggingLogger:
     def __init__(self, origin: logging.Logger):
         self._origin = origin 
 
@@ -114,7 +117,7 @@ class LoggingLogger(Logger):
     def critical(self, msg: str, show_trace=False) -> None:
         self._origin.critical(msg, exc_info=show_trace)
     
-    def add_handler(self, handler: Handler) -> None:
+    def add_handler(self, handler: LoggingHandler) -> None:
         self._origin.addHandler(handler.origin)
     
     def set_level(self, level: Level) -> None:
@@ -155,7 +158,8 @@ class _LoggingLogger(logging.Logger):
         return rv
 
 
-class LoggingFactory(Factory):
+@Factory.register
+class LoggingFactory:
     def get_logger(self, module_name: str) -> Logger:
         logging.setLoggerClass(_LoggingLogger)
         origin = logging.getLogger(module_name)

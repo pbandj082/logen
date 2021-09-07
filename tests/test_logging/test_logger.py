@@ -1,6 +1,8 @@
+import logging
 import pytest
 from logen import (
     LoggingFactory,
+    Logger,
     Level,
     standard_console_log_format_function,
     standard_file_log_format_function

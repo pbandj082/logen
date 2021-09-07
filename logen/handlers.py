@@ -6,10 +6,6 @@ from .level import Level
 
 
 class Handler(metaclass=ABCMeta):
-    @property
-    @abstractmethod
-    def origin() -> Any: ...
-
     @abstractmethod
     def set_formatter(self, formatter: Formatter) -> None:
         ...

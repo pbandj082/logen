@@ -189,19 +189,17 @@ def standard_console_log_format_function(record: LogRecord):
         ),
         color=level_color,
     ).sequence_string()
-    message = ForeColoring(
-        child=ConsoleMessage(record.message),
-        color=level_color,
-    ).sequence_string()
-    module_name = record.module_name
-    line_no = record.line_no
+    message = record.message
+    called_from = ''
+    if record.level == 'DEBUG':
+        called_from = f'({record.module_name}:{record.line_no or ""})'
     stack_trace = ''
     if record.stack_trace:
         stack_trace = ForeColoring(
             child=ConsoleMessage(f'\n{record.stack_trace}'),
             color=level_color_map['ERROR'],
         ).sequence_string()
-    s = f'{created_at} {level + ":":24s} {message} ({module_name}:{line_no or ""}){stack_trace}'
+    s = f'{created_at} {level + ":":24s} {message} {called_from} {stack_trace}'
     return s
 
 
@@ -213,11 +211,12 @@ def standard_file_log_format_function(record: LogRecord):
     )
     level = record.level
     message = record.message
-    module_name = record.module_name
-    line_no = record.line_no
+    called_from = ''
+    if record.level == 'DEBUG':
+        called_from = f'({record.module_name}:{record.line_no or ""})'
     stack_trace = ''
     if record.stack_trace:
         stack_trace = f'\n{record.stack_trace}'
-    s = f'{created_at} {level + ":":8s} {message} ({module_name}:{line_no or ""}){stack_trace}'
+    s = f'{created_at} {level + ":":8s} {message} {called_from} {stack_trace}'
     return s
 
