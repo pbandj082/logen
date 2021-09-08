@@ -9,34 +9,6 @@ from .handlers import LoggingHandler
 from .level import Level, to_logging_level
 
 
-@Logger.register
-class LoggingLogger:
-    def __init__(self, origin: logging.Logger):
-        self._origin = origin 
-
-
-    def debug(self, msg: str) -> None:
-        self._origin.debug(msg)
-
-    def info(self, msg: str) -> None:
-        self._origin.info(msg)
-
-    def warning(self, msg: str) -> None:
-        self._origin.warning(msg)
-
-    def error(self, msg: str, show_trace=False) -> None:
-        self._origin.error(msg, exc_info=show_trace)
-    
-    def critical(self, msg: str, show_trace=False) -> None:
-        self._origin.critical(msg, exc_info=show_trace)
-    
-    def add_handler(self, handler: LoggingHandler) -> None:
-        self._origin.addHandler(handler.origin)
-    
-    def set_level(self, level: Level) -> None:
-        self._origin.setLevel(to_logging_level(level))
-    
-
 class _LoggingLogger(logging.Logger):
     def __init__(self, name, level=logging.NOTSET):
         super().__init__(name=name, level=level)
@@ -70,6 +42,33 @@ class _LoggingLogger(logging.Logger):
             rv = (co.co_filename, f.f_lineno, co.co_name, sinfo)
         return rv
 
+
+@Logger.register
+class LoggingLogger:
+    def __init__(self, origin: _LoggingLogger):
+        self._origin = origin 
+
+    def debug(self, msg: str, console_msg: Optional[str] = None) -> None:
+        self._origin.debug(msg, extra={'console_msg': console_msg})
+
+    def info(self, msg: str, console_msg: Optional[str] = None) -> None:
+        self._origin.info(msg, extra={'console_msg': console_msg})
+
+    def warning(self, msg: str, console_msg: Optional[str] = None) -> None:
+        self._origin.warning(msg, extra={'console_msg': console_msg})
+
+    def error(self, msg: str, console_msg: Optional[str] = None, show_trace: bool = False) -> None:
+        self._origin.error(msg, extra={'console_msg': console_msg}, exc_info=show_trace)
+    
+    def critical(self, msg: str, console_msg: Optional[str] = None, show_trace: bool = False) -> None:
+        self._origin.critical(msg, extra={'console_msg': console_msg}, exc_info=show_trace)
+    
+    def add_handler(self, handler: LoggingHandler) -> None:
+        self._origin.addHandler(handler.origin)
+    
+    def set_level(self, level: Level) -> None:
+        self._origin.setLevel(to_logging_level(level))
+    
 
 def get_logging_logger(module_name: str) -> LoggingLogger:
     logging.setLoggerClass(_LoggingLogger)

@@ -159,6 +159,7 @@ class LogRecord(BaseModel):
     timestamp: Optional[float] = Field(None)
     milliseconds: Optional[int] = Field(None)
     stack_trace: Optional[str] = Field(None)
+    console_msg: Optional[str] = Field(None)
 
 
 level_color_map = {
@@ -189,7 +190,7 @@ def standard_console_log_format_function(record: LogRecord):
         ),
         color=level_color,
     ).sequence_string()
-    message = record.message
+    message = record.console_msg or record.message
     called_from = ''
     if record.level == 'DEBUG':
         called_from = f'({record.module_name}:{record.line_no or ""})'

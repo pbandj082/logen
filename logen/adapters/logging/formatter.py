@@ -4,16 +4,6 @@ from ...formatter import Formatter, LogRecord
 from typing import Callable
 
 
-@Formatter.register
-class LoggingFormatter:
-    def __init__(self, origin: logging.Formatter):
-        self._origin = origin
-
-    @property
-    def origin(self) -> logging.Formatter:
-        return self._origin
-
-
 class _LoggingFormatter(logging.Formatter):
     def __init__(self, format_function: Callable[[LogRecord], str]):
         super().__init__()
@@ -26,6 +16,7 @@ class _LoggingFormatter(logging.Formatter):
         line_no = record.lineno
         timestamp = record.created
         milliseconds = record.msecs
+        console_msg = record.__dict__.get('console_msg')
         stack_trace = None
         if record.exc_info:
             if record.exc_text:
@@ -40,10 +31,21 @@ class _LoggingFormatter(logging.Formatter):
                 line_no=line_no,
                 timestamp=timestamp,
                 milliseconds=milliseconds,
-                stack_trace=stack_trace
+                stack_trace=stack_trace,
+                console_msg=console_msg,
             )
         )
         return s
+
+
+@Formatter.register
+class LoggingFormatter:
+    def __init__(self, origin: _LoggingFormatter):
+        self._origin = origin
+
+    @property
+    def origin(self) -> _LoggingFormatter:
+        return self._origin
 
 
 def create_logging_formatter(
