@@ -1,22 +1,23 @@
-import logging
 from typing import Callable
 
 
 from .formatter import create_logging_formatter
 from .handlers import create_logging_console_handler, create_logging_file_handler
-from .logger import get_logging_logger
+from .logger import acquire_logging_logger
+from .manager import manager as logging_manager
 from ...factory import Factory
 from ...formatter import Formatter, LogRecord
 from ...factory import Factory
 from ...logger import Logger
 from ...handlers import ConsoleHandler
 from ...handlers import FileHandler
+from ...manager import Manager
 
 
 @Factory.register
 class LoggingFactory:
-    def get_logger(self, module_name: str) -> Logger:
-        logger = get_logging_logger(module_name)
+    def acquire_logger(self, module_name: str) -> Logger:
+        logger = acquire_logging_logger(module_name)
         return logger
 
     def create_formatter(
@@ -45,3 +46,8 @@ class LoggingFactory:
             encoding=encoding,
         )
         return file_handler
+    
+
+    @property
+    def manager(self) -> Manager:
+        return logging_manager

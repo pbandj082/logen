@@ -3,13 +3,13 @@ from typing import Callable
 
 from .logger import Logger
 from .formatter import Formatter, LogRecord
-from .handlers import FileHandler
-from .handlers import ConsoleHandler
+from .handlers import FileHandler, ConsoleHandler
+from .manager import Manager
 
 
 class Factory(metaclass=ABCMeta):
     @abstractmethod
-    def get_logger(self, module_name: str) -> Logger:
+    def acquire_logger(self, module_name: str) -> Logger:
         ...
     
     @abstractmethod
@@ -32,3 +32,8 @@ class Factory(metaclass=ABCMeta):
     @abstractmethod
     def create_console_handler(self) -> ConsoleHandler:
         ...
+    
+    @property
+    @abstractmethod
+    def manager() -> Manager: ...
+    

@@ -4,11 +4,11 @@ from logen import (
     standard_console_log_format_function,
     standard_file_log_format_function
 )
-from logen.formatter import ConsoleMessage, ForeColoring, ConsoleGreen
+from logen.formatter import ConsoleMessage, ForeColoring, ConsoleColors
 
 def test_default_format():
     logen_factory = LoggingFactory()
-    logger = logen_factory.get_logger(__name__)
+    logger = logen_factory.acquire_logger(__name__)
     logen_factory.create_console_handler()
     logger.set_level(Level.debug)
     console_log_handler = logen_factory.create_console_handler()
@@ -28,7 +28,7 @@ def test_default_format():
     logger.debug('This is debug log.')
     coloring_info_str = ForeColoring(
         child=ConsoleMessage("info"),
-        color=ConsoleGreen(bright=True),
+        color=ConsoleColors.bright_green,
     ).sequence_string()
     logger.info('This is info log.', console_msg=f'This is {coloring_info_str} log')
     logger.warning('This is warning log.')

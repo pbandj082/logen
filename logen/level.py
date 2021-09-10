@@ -1,9 +1,9 @@
-from enum import Enum
+from enum import IntEnum
 import logging
 from typing import Dict
 
 
-class Level(int, Enum):
+class Level(IntEnum):
     debug: int = 10
     info: int =  20
     warning: int = 30

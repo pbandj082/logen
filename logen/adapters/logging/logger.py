@@ -70,7 +70,7 @@ class LoggingLogger:
         self._origin.setLevel(to_logging_level(level))
     
 
-def get_logging_logger(module_name: str) -> LoggingLogger:
+def acquire_logging_logger(module_name: str) -> LoggingLogger:
     logging.setLoggerClass(_LoggingLogger)
     origin = logging.getLogger(module_name)
     return LoggingLogger(origin=origin)

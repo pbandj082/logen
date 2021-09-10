@@ -1,119 +1,42 @@
 from abc import ABCMeta, abstractmethod
+from enum import Enum
 from pydantic import BaseModel, Field
 import time
 from typing import Optional
 
 
-class ConsoleColor(metaclass=ABCMeta):
-    @abstractmethod
-    def fg_sequence(self) -> str: ...
+class ConsoleColor:
+    def __init__(self, fg_sequence: str, bg_sequence: str):
+        self._fg_sequence = fg_sequence
+        self._bg_sequence = bg_sequence
+    
 
-    @abstractmethod
-    def bg_sequence(self) -> str: ...
-
-
-class ConsoleBlack(ConsoleColor):
-    def __init__(self, bright=False):
-        self._bright = bright
-
+    @property
     def fg_sequence(self) -> str:
-        sequence = '\033[90m' if self._bright else '\033[30m'
-        return sequence
+        return self._fg_sequence
 
+    @property
     def bg_sequence(self) -> str:
-        sequence = '\033[100m' if self._bright else '\033[40m'
-        return sequence
+        return self._bg_sequence
 
 
-class ConsoleRed(ConsoleColor):
-    def __init__(self, bright=False):
-        self._bright = bright
-
-    def fg_sequence(self) -> str:
-        sequence = '\033[91m' if self._bright else '\033[31m'
-        return sequence
-
-    def bg_sequence(self) -> str:
-        sequence = '\033[101m' if self._bright else '\033[41m'
-        return sequence
-
-
-class ConsoleGreen(ConsoleColor):
-    def __init__(self, bright=False):
-        self._bright = bright
-
-    def fg_sequence(self) -> str:
-        sequence = '\033[92m' if self._bright else '\033[32m'
-        return sequence
-
-    def bg_sequence(self) -> str:
-        sequence = '\033[102m' if self._bright else '\033[42m'
-        return sequence
-
-
-class ConsoleYellow(ConsoleColor):
-    def __init__(self, bright=False):
-        self._bright = bright
-
-    def fg_sequence(self) -> str:
-        sequence = '\033[93m' if self._bright else '\033[33m'
-        return sequence
-
-    def bg_sequence(self) -> str:
-        sequence = '\033[103m' if self._bright else '\033[43m'
-        return sequence
-
-
-class ConsoleBlue(ConsoleColor):
-    def __init__(self, bright=False):
-        self._bright = bright
-
-    def fg_sequence(self) -> str:
-        sequence = '\033[94m' if self._bright else '\033[34m'
-        return sequence
-
-    def bg_sequence(self) -> str:
-        sequence = '\033[104m' if self._bright else '\033[44m'
-        return sequence
-
-
-class ConsoleMagenta(ConsoleColor):
-    def __init__(self, bright=False):
-        self._bright = bright
-
-    def fg_sequence(self) -> str:
-        sequence = '\033[95m' if self._bright else '\033[35m'
-        return sequence
-
-    def bg_sequence(self) -> str:
-        sequence = '\033[105m' if self._bright else '\033[45m'
-        return sequence
-
-
-class ConsoleCyan(ConsoleColor):
-    def __init__(self, bright=False):
-        self._bright = bright
-
-    def fg_sequence(self) -> str:
-        sequence = '\033[96m' if self._bright else '\033[36m'
-        return sequence
-
-    def bg_sequence(self) -> str:
-        sequence = '\033[106m' if self._bright else '\033[46m'
-        return sequence
-
-
-class ConsoleWhite(ConsoleColor):
-    def __init__(self, bright=False):
-        self._bright = bright
-
-    def fg_sequence(self) -> str:
-        sequence = '\033[97m' if self._bright else '\033[37m'
-        return sequence
-
-    def bg_sequence(self) -> str:
-        sequence = '\033[107m' if self._bright else '\033[47m'
-        return sequence
+class ConsoleColors:
+    black = ConsoleColor('\033[30m', '\033[40m')
+    bright_black = ConsoleColor('\033[90m', '\033[100m')
+    red = ConsoleColor('\033[31m', '\033[41m')
+    bright_red = ConsoleColor('\033[91m', '\033[101m')
+    green = ConsoleColor('\033[32m', '\033[42m')
+    bright_green = ConsoleColor('\033[92m', '\033[102m')
+    yellow = ConsoleColor('\033[33m', '\033[43m')
+    bright_yellow = ConsoleColor('\033[93m', '\033[103m')
+    blue = ConsoleColor('\033[34m', '\033[44m')
+    bright_blue = ConsoleColor('\033[94m', '\033[104m')
+    magenta = ConsoleColor('\033[35m', '\033[45m')
+    bright_magenta = ConsoleColor('\033[95m', '\033[105m')
+    cyan = ConsoleColor('\033[36m', '\033[46m')
+    bright_cyan = ConsoleColor('\033[96m', '\033[106m')
+    white = ConsoleColor('\033[37m', '\033[47m')
+    bright_white = ConsoleColor('\033[97m', '\033[107m')
 
 
 class StyledConsole(metaclass=ABCMeta):
@@ -135,7 +58,7 @@ class ForeColoring(StyledConsole):
         self._color = color
 
     def sequence_string(self) -> str:
-        return f'{self._color.fg_sequence()}{self._child.sequence_string()}'
+        return f'{self._color.fg_sequence}{self._child.sequence_string()}'
 
 
 class BackColoring(StyledConsole):
@@ -144,7 +67,7 @@ class BackColoring(StyledConsole):
         self._color = color
 
     def sequence_string(self) -> str:
-        return f'{self._color.bg_sequence()}{self._child.sequence_string()}'
+        return f'{self._color.bg_sequence}{self._child.sequence_string()}'
 
 
 class Formatter(metaclass=ABCMeta):
@@ -163,11 +86,11 @@ class LogRecord(BaseModel):
 
 
 level_color_map = {
-    'DEBUG': ConsoleWhite(bright=True),
-    'INFO': ConsoleGreen(bright=True),
-    'WARNING': ConsoleYellow(bright=True),
-    'ERROR': ConsoleRed(bright=True),
-    'CRITICAL': ConsoleRed(bright=True),
+    'DEBUG': ConsoleColors.bright_white,
+    'INFO': ConsoleColors.bright_green,
+    'WARNING': ConsoleColors.bright_yellow,
+    'ERROR': ConsoleColors.bright_red,
+    'CRITICAL': ConsoleColors.bright_red,
 }
 
 
@@ -180,13 +103,13 @@ def standard_console_log_format_function(record: LogRecord):
                 time.localtime(record.timestamp),
             ),
         ),
-        color=ConsoleBlue(bright=True),
+        color=ConsoleColors.bright_blue,
     ).sequence_string()
     level_color = level_color_map[record.level]
     level = BackColoring(
         child=ForeColoring(
             child=ConsoleMessage(record.level),
-            color=ConsoleBlack(),
+            color=ConsoleColors.black,
         ),
         color=level_color,
     ).sequence_string()

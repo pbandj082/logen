@@ -7,7 +7,7 @@ def _get_requires():
 
 setup(
     name='logen',
-    version='0.0.7',
+    version='0.0.8',
     url='https://github.com/pbandj082/logen',
     packages=['logen', 'logen.adapters', 'logen.adapters.logging'],
     requires=_get_requires(),
