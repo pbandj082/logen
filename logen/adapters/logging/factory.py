@@ -6,7 +6,7 @@ from .handlers import create_logging_console_handler, create_logging_file_handle
 from .logger import acquire_logging_logger
 from .manager import manager as logging_manager
 from ...factory import Factory
-from ...formatter import Formatter, LogRecord
+from ...formatter import Formatter, LogRecord, standard_log_format_function
 from ...factory import Factory
 from ...logger import Logger
 from ...handlers import ConsoleHandler
@@ -22,7 +22,7 @@ class LoggingFactory:
 
     def create_formatter(
         self,
-        format_function: Callable[[LogRecord], str],
+        format_function: Callable[[LogRecord], str] = standard_log_format_function,
     ) -> Formatter:
         formatter = create_logging_formatter(format_function)
         return formatter

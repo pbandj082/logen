@@ -94,7 +94,7 @@ level_color_map = {
 }
 
 
-def standard_console_log_format_function(record: LogRecord):
+def console_log_format_function(record: LogRecord):
     time_format = f'%Y-%m-%d %H:%M:%S.{record.milliseconds:03d}%z'
     created_at = ForeColoring(
         child=ConsoleMessage(
@@ -127,7 +127,7 @@ def standard_console_log_format_function(record: LogRecord):
     return s
 
 
-def standard_file_log_format_function(record: LogRecord):
+def standard_log_format_function(record: LogRecord):
     time_format = f'%Y-%m-%d %H:%M:%S.{record.milliseconds:03d}%z'
     created_at = time.strftime(
         time_format,

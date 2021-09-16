@@ -2,7 +2,7 @@ from abc import ABCMeta, abstractmethod
 from typing import Callable
 
 from .logger import Logger
-from .formatter import Formatter, LogRecord
+from .formatter import Formatter, LogRecord, standard_log_format_function
 from .handlers import FileHandler, ConsoleHandler
 from .manager import Manager
 
@@ -15,7 +15,7 @@ class Factory(metaclass=ABCMeta):
     @abstractmethod
     def create_formatter(
         self,
-        fmt_func: Callable[[LogRecord], str],
+        fmt_func: Callable[[LogRecord], str] = standard_log_format_function,
     ) -> Formatter:
         ...
 

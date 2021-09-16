@@ -1,8 +1,7 @@
 from logen import (
     LoggingFactory,
     Level,
-    standard_console_log_format_function,
-    standard_file_log_format_function
+    console_log_format_function,
 )
 from logen.formatter import ConsoleMessage, ForeColoring, ConsoleColors
 
@@ -13,13 +12,13 @@ def test_default_format():
     logger.set_level(Level.debug)
     console_log_handler = logen_factory.create_console_handler()
     console_log_handler.set_level(Level.debug)
-    console_log_formatter = logen_factory.create_formatter(standard_console_log_format_function)
+    console_log_formatter = logen_factory.create_formatter(console_log_format_function)
     console_log_handler.set_formatter(console_log_formatter)
     debug_file_log_handler = logen_factory.create_file_handler('tests/test_logging/log/debug.log')
     debug_file_log_handler.set_level(Level.debug)
     error_file_log_handler = logen_factory.create_file_handler('tests/test_logging/log/error.log')
     error_file_log_handler.set_level(Level.error)
-    file_log_formatter = logen_factory.create_formatter(standard_file_log_format_function)
+    file_log_formatter = logen_factory.create_formatter()
     debug_file_log_handler.set_formatter(file_log_formatter)
     error_file_log_handler.set_formatter(file_log_formatter)
     logger.add_handler(debug_file_log_handler)

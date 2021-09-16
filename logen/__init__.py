@@ -1,8 +1,8 @@
 from .factory import Factory
 from .formatter import Formatter
 from .formatter import LogRecord
-from .formatter import standard_console_log_format_function
-from .formatter import standard_file_log_format_function
+from .formatter import console_log_format_function
+from .formatter import standard_log_format_function
 from .handlers import Handler
 from .handlers import ConsoleHandler
 from .handlers import FileHandler
@@ -21,6 +21,6 @@ __all__ = [
     'Logger',
     'LoggingFactory',
     'LogRecord',
-    'standard_console_log_format_function',
-    'standard_file_log_format_function',
+    'console_log_format_function',
+    'standard_log_format_function',
 ]
