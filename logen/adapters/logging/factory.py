@@ -6,7 +6,7 @@ from .handlers import create_logging_console_handler, create_logging_file_handle
 from .logger import acquire_logging_logger
 from .manager import manager as logging_manager
 from ...factory import Factory
-from ...formatter import Formatter, LogRecord, standard_log_format_function
+from ...formatter import Formatter, LogRecord, standard_log_format_function, console_log_format_function
 from ...factory import Factory
 from ...logger import Logger
 from ...handlers import ConsoleHandler
@@ -29,6 +29,7 @@ class LoggingFactory:
 
     def create_console_handler(self) -> ConsoleHandler:
         console_handler = create_logging_console_handler()
+        console_handler.set_formatter(self.create_formatter(console_log_format_function))
         return console_handler
 
 
@@ -45,6 +46,7 @@ class LoggingFactory:
             backup_count=backup_count,
             encoding=encoding,
         )
+        file_handler.set_formatter(self.create_formatter())
         return file_handler
     
 
