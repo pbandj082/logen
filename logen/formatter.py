@@ -1,8 +1,7 @@
 from abc import ABCMeta, abstractmethod
 from enum import Enum
-from pydantic import BaseModel, Field
 import time
-from typing import Optional
+from typing import Optional, NamedTuple
 
 
 class ConsoleColor:
@@ -10,7 +9,6 @@ class ConsoleColor:
         self._fg_sequence = fg_sequence
         self._bg_sequence = bg_sequence
     
-
     @property
     def fg_sequence(self) -> str:
         return self._fg_sequence
@@ -74,15 +72,16 @@ class Formatter(metaclass=ABCMeta):
     ...
 
 
-class LogRecord(BaseModel):
-    module_name: Optional[str] = Field(None)
-    message: Optional[str] = Field(None)
-    level: Optional[str] = Field(None)
-    line_no: Optional[int] = Field(None)
-    timestamp: Optional[float] = Field(None)
-    milliseconds: Optional[int] = Field(None)
-    stack_trace: Optional[str] = Field(None)
-    console_msg: Optional[str] = Field(None)
+class LogRecord(NamedTuple):
+    message: Optional[str] = None
+    module_name: Optional[str] = None
+    level: Optional[str] = None
+    line_no: Optional[int] = None
+    timestamp: Optional[float] = None
+    milliseconds: Optional[int] = None
+    stack_trace: Optional[str] = None
+    console_msg: Optional[str] = None
+    process: Optional[str] = None
 
 
 level_color_map = {
@@ -105,6 +104,13 @@ def console_log_format_function(record: LogRecord):
         ),
         color=ConsoleColors.bright_blue,
     ).sequence_string()
+    process = ''
+    if record.process is not None:
+        process_id = ForeColoring(
+            child=ConsoleMessage(record.process),
+            color=ConsoleColors.bright_cyan
+        ).sequence_string()
+        process = f' [{process_id}]'
     level_color = level_color_map[record.level]
     level = BackColoring(
         child=ForeColoring(
@@ -116,14 +122,14 @@ def console_log_format_function(record: LogRecord):
     message = record.console_msg or record.message
     called_from = ''
     if record.level == 'DEBUG':
-        called_from = f'({record.module_name}:{record.line_no or ""})'
+        called_from = f' ({record.module_name}:{record.line_no or ""})'
     stack_trace = ''
     if record.stack_trace:
         stack_trace = ForeColoring(
             child=ConsoleMessage(f'\n{record.stack_trace}'),
             color=level_color_map['ERROR'],
         ).sequence_string()
-    s = f'{created_at} {level + ":":24s} {message} {called_from} {stack_trace}'
+    s = f'{created_at}{process} {level + ":":24s} {message}{called_from}{stack_trace}'
     return s
 
 
@@ -133,14 +139,17 @@ def standard_log_format_function(record: LogRecord):
         time_format,
         time.localtime(record.timestamp),
     )
+    process = ''
+    if record.process is not None:
+        process = f' [{record.process}]'
     level = record.level
     message = record.message
     called_from = ''
     if record.level == 'DEBUG':
-        called_from = f'({record.module_name}:{record.line_no or ""})'
+        called_from = f' ({record.module_name}:{record.line_no or ""})'
     stack_trace = ''
     if record.stack_trace:
         stack_trace = f'\n{record.stack_trace}'
-    s = f'{created_at} {level + ":":8s} {message} {called_from} {stack_trace}'
+    s = f'{created_at}{process} {level + ":":8s} {message}{called_from}{stack_trace}'
     return s
 
