@@ -115,7 +115,7 @@ def console_log_format_function(record: LogRecord):
     level = ForeColoring(
         child=ConsoleMessage(record.level),
         color=level_color,
-    ).sequence_string(),
+    ).sequence_string()
     message = record.console_msg or record.message
     called_from = ''
     if record.level == 'DEBUG':
