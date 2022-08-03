@@ -85,7 +85,7 @@ class LogRecord(NamedTuple):
 
 
 level_color_map = {
-    'DEBUG': ConsoleColors.bright_white,
+    'DEBUG': ConsoleColors.bright_magenta,
     'INFO': ConsoleColors.bright_green,
     'WARNING': ConsoleColors.bright_yellow,
     'ERROR': ConsoleColors.bright_red,
@@ -112,13 +112,10 @@ def console_log_format_function(record: LogRecord):
         ).sequence_string()
         process = f' [{process_id}]'
     level_color = level_color_map[record.level]
-    level = BackColoring(
-        child=ForeColoring(
-            child=ConsoleMessage(record.level),
-            color=ConsoleColors.black,
-        ),
+    level = ForeColoring(
+        child=ConsoleMessage(record.level),
         color=level_color,
-    ).sequence_string()
+    ).sequence_string(),
     message = record.console_msg or record.message
     called_from = ''
     if record.level == 'DEBUG':

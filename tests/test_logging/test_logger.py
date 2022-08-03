@@ -1,7 +1,6 @@
 from logen import (
     LoggingFactory,
     Level,
-    console_log_format_function,
 )
 from logen.formatter import ConsoleMessage, ForeColoring, ConsoleColors
 
