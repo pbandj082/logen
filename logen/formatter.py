@@ -126,7 +126,7 @@ def console_log_format_function(record: LogRecord):
             child=ConsoleMessage(f'\n{record.stack_trace}'),
             color=level_color_map['ERROR'],
         ).sequence_string()
-    s = f'{created_at}{process} {level + ":":24s} {message}{called_from}{stack_trace}'
+    s = f'{created_at}{process} {level + ":":16s} {message}{called_from}{stack_trace}'
     return s
 
 
